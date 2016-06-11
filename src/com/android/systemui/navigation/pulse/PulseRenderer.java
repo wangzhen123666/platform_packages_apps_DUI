@@ -31,11 +31,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.UserHandle;
 
 import com.android.systemui.navigation.pulse.Renderer;
 import com.android.systemui.navigation.pulse.StreamValidator;
 import com.android.systemui.navigation.utils.ColorAnimator;
 import com.android.systemui.R;
+
+import android.provider.Settings;
 
 public class PulseRenderer implements Renderer {
     private static final int DEF_PAINT_ALPHA = (byte) 188;
@@ -48,24 +51,23 @@ public class PulseRenderer implements Renderer {
     private int mDbFuzz;
     private int mPathEffect1;
     private int mPathEffect2;
-
+    private int mCustomDimen;
+    private int mNumDivision;
+    private int mFilledBlock;
+    private int mEmptyBlock;
+    private int mFudgeFactor;
+    private int mFuzz;
     private Paint mPaint;
     private StreamValidator mValidator;
 
     public PulseRenderer(Context ctx, StreamValidator validator) {
         super();
         mValidator = validator;
-
-        mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions);
         mDefColor = ctx.getResources().getColor(R.color.config_pulseFillColor);
-        mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor);
-        mDbFuzz = ctx.getResources().getInteger(R.integer.config_pulseDbFuzz);
-        mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect_1);
-        mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect_2);
         mUserColor = mDefColor;
-
         mPaint = new Paint();
-        mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth));
+        getcustomizations(ctx);
+        mDbFuzz = ctx.getResources().getInteger(R.integer.config_pulseDbFuzz);
         mPaint.setAntiAlias(true);
         mPaint.setPathEffect(new android.graphics.DashPathEffect(new float[] {
                 mPathEffect1,
@@ -133,4 +135,154 @@ public class PulseRenderer implements Renderer {
     public void onStopAnimation(ColorAnimator colorAnimator, int lastColor) {
         setColor(mUserColor, true);
     }
+    
+    public void getcustomizations(Context ctx) {   
+        mFilledBlock = Settings.System.getIntForUser(
+		ctx.getContentResolver(), Settings.System.PULSE_FILLED_BLOCK_SIZE, 0,
+		UserHandle.USER_CURRENT);
+	mEmptyBlock = Settings.System.getIntForUser(
+		ctx.getContentResolver(), Settings.System.PULSE_EMPTY_BLOCK_SIZE, 0,
+		UserHandle.USER_CURRENT);
+	mCustomDimen = Settings.System.getIntForUser(
+		ctx.getContentResolver(), Settings.System.PULSE_CUSTOM_DIMEN, 0,
+		UserHandle.USER_CURRENT);
+	mNumDivision = Settings.System.getIntForUser(
+		ctx.getContentResolver(), Settings.System.PULSE_CUSTOM_DIV, 0,
+		UserHandle.USER_CURRENT);
+	mFudgeFactor = Settings.System.getIntForUser(
+		ctx.getContentResolver(), Settings.System.PULSE_CUSTOM_FUDGE_FACTOR, 0,
+		UserHandle.USER_CURRENT);	
+        if (mFilledBlock == 0) {
+	mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect_1);
+	} 
+	else if (mFilledBlock == 1) {
+	mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect1_1);
+	} 
+	else if (mFilledBlock == 2) {
+	mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect2_1);
+	}
+	else if (mFilledBlock == 3) {
+	mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect3_1);
+	}
+	else if (mFilledBlock == 4) {
+	mPathEffect1 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect4_1);
+	}
+	if (mEmptyBlock  == 0) {
+	mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect_2);
+	}
+	else if (mEmptyBlock == 1) {
+	mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect1_2);
+	}
+	else if (mEmptyBlock  == 2) {
+	mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect2_2);
+	}
+	else if (mEmptyBlock  == 3) {
+	mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect3_2);
+	}  
+	else if (mEmptyBlock  == 4) {
+	mPathEffect2 = ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathEffect4_2);
+	}     
+	if (mCustomDimen == 0) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth));
+	} 
+	else if (mCustomDimen == 1) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth1));
+	} 
+	else if (mCustomDimen == 2) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth2));
+	}
+	else if (mCustomDimen == 3) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth3));
+	}
+	else if (mCustomDimen == 4) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth4));
+	}
+	else if (mCustomDimen == 5) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth5));
+	}
+	else if (mCustomDimen == 6) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth6));
+	}
+	else if (mCustomDimen == 7) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth7));
+	}
+	else if (mCustomDimen == 8) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth8));
+	}
+	else if (mCustomDimen == 9) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth9));
+	}
+	else if (mCustomDimen == 10) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth10));
+	}
+	else if (mCustomDimen == 11) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth11));
+	}
+	else if (mCustomDimen == 12) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth12));
+	}
+	else if (mCustomDimen == 13) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth13));
+	}
+	else if (mCustomDimen == 14) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth14));
+	}
+	else if (mCustomDimen == 15) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth15));
+	}
+	else if (mCustomDimen == 16) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth16));
+	}
+	else if (mCustomDimen == 17) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth17));
+	}
+	else if (mCustomDimen == 18) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth18));
+	}
+	else if (mCustomDimen == 19) {
+	mPaint.setStrokeWidth(ctx.getResources().getDimensionPixelSize(R.dimen.config_pulsePathStrokeWidth19));
+	}
+	if (mNumDivision == 0) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions);
+	} 
+	else if (mNumDivision == 1) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions1);
+	} 
+	else if (mNumDivision == 2) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions2);
+	}
+	else if (mNumDivision == 3) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions3);
+	}
+	else if (mNumDivision == 4) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions4);
+	}
+	else if (mNumDivision == 5) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions5);
+	}
+	else if (mNumDivision == 6) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions6);
+	}
+	else if (mNumDivision == 7) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions7);
+	}
+	else if (mNumDivision == 8) {
+	mDivisions = ctx.getResources().getInteger(R.integer.config_pulseDivisions8);
+	}  
+	if(mFudgeFactor == 0) {
+	mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor);
+	} 
+	else if (mFudgeFactor == 1) {
+	mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor1);
+	}
+	else if (mFudgeFactor == 2) {
+	mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor2);
+	}
+	else if (mFudgeFactor == 3) {
+	mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor3);
+	}
+	else if (mFudgeFactor == 4) {
+	mDbFuzzFactor = ctx.getResources().getInteger(R.integer.config_pulseDbFuzzFactor4);
+	} 
+     }  	      
 }

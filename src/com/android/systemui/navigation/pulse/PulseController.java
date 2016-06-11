@@ -176,6 +176,21 @@ public class PulseController {
             resolver.registerContentObserver(
                     Settings.Secure.getUriFor(Settings.Secure.FLING_PULSE_LAVALAMP_SPEED), false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIMEN),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIV),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_FILLED_BLOCK_SIZE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_EMPTY_BLOCK_SIZE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_FUDGE_FACTOR),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -183,6 +198,16 @@ public class PulseController {
             if (uri.equals(Settings.Secure.getUriFor(Settings.Secure.FLING_PULSE_ENABLED))) {
                 updateEnabled();
                 doLinkage();
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_CUSTOM_DIMEN))) {     
+            resetvisualizer(); 
+            }  else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_CUSTOM_DIV))) {     
+            resetvisualizer(); 
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_FILLED_BLOCK_SIZE))) {     
+            resetvisualizer(); 
+            }  else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_EMPTY_BLOCK_SIZE))) {     
+            resetvisualizer(); 
+            } else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_CUSTOM_FUDGE_FACTOR))) {     
+            resetvisualizer(); 
             } else {
                 update();
             }
@@ -392,4 +417,12 @@ public class PulseController {
             mVisualizer.onDraw(canvas);
         }
     }
+    
+   public void resetvisualizer() {
+	setPulseObserver(mPulseObserver);
+	setVisualizerLocked(true);
+	mVisualizer.setDrawingEnabled(true);
+        mVisualizer.link(0);
+        mLinked = true;
+   }
 }
